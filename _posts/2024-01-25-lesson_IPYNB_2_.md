@@ -32,19 +32,26 @@ courses: {'csa': {'week': 19}}
    - Access the deployment server using either csp.nighthawkcodingsociety.com or csa.nighthawkcodingsociety.com
    - Enter the username and password
 
+### Server Setup
+1. **AWS EC2 Terminal:**
+   - Setup the server environment and fetch the project code
+   - Clone your backend repo: `git clone github.com/server/project.git your_repo`
+   - Navigate to the repo: `cd your_repo`
+
 ### Application Setup
 1. **Finding Port:**
-   - Run `docker ps` on AWS EC2 terminal to find an available port starting with 8—
-   - This allows you to identify an available port for the application
+   - Run `docker ps` on AWS EC2 terminal to find which ports are already taken
+   - This allows you to identify an available port for the application, choose one that is not taken
 
 2. **Docker Setup:**
-   - Before configuring your Dockerfile, ensure that Docker is installed (for our class, it is already installed but it is good practice to verify that it is installed)
+   - Before configuring your Dockerfile, ensure that Docker is installed (for our class, it is already installed but it is good practice to verify it)
    - Open a terminal and run the following command to check the docker version: ``docker --version``
-   - Verify the port you found using docker ps on AWS EC2 is matched in your Dockerfile and docker-compose.yml
+   - Verify the port you found after running docker ps is matched in your Dockerfile and docker-compose.yml
 
 > What your Dockerfile should look like
 
-```# syntax=docker/dockerfile:1
+```
+# syntax=docker/dockerfile:1
 FROM openjdk:18-alpine3.13
 WORKDIR /app
 RUN apk update && apk upgrade && \
@@ -57,35 +64,21 @@ EXPOSE 8---
 
 > What your docker-compose.yml should look like
 
-```version: '3'
+```
+version: '3'
 services:
   web:
     image: your_image_name
     build: .
     ports:
-      - "8---:8---"
+      - "8---:8085"
     volumes:
        - ./volumes:/volumes
     restart: unless-stopped
 ```
 
-   - Once the ports match, test your setup by running ``docker-compose up -d``
-
-3. **Testing:**
-   - Test the application locally before deployment
-   - Run `docker-compose up` or `sudo docker-compose up` in VSCode terminal
-   - Open `http://localhost:8---` in your browser to check if it runs smoothly
-
-### Server Setup
-1. **AWS EC2 Terminal:**
-   - Setup the server environment and fetch the project code
-   - Clone your backend repo: `git clone github.com/server/project.git your_repo`
-   - Navigate to the repo: `cd your_repo`
-
-2. **Build and Test:**
-   - Build and test the application on the server
-   - Build the site: `docker-compose up -d --build`
-   - Test your site: `curl localhost:8---` (replace '8---' with your port)
+   - Once the ports match, test your setup by running ``docker-compose up -d`` to build your website
+   - Run ```curl localhost:8---``` to check if your build was successful
 
 ### DNS & NGINX Setup
 1. **Route 53 DNS:**
