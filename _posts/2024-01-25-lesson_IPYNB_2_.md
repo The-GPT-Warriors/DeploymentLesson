@@ -5,7 +5,7 @@ title: Deployment
 description: An in depth deployment lesson
 type: hacks
 toc: True
-courses: {'csa': {'week': 18}}
+courses: {'csa': {'week': 19}}
 ---
 
 # Deployment Mini Guide
@@ -15,9 +15,6 @@ courses: {'csa': {'week': 18}}
 ### Prerequisites
 1. **GitHub Repository:**
    - Must have a backend repository on GitHub
-
-2. **Docker Setup:**
-   - Verify Backend Docker files are running on localhost
 
 3. **Domain Configuration:**
    - Have a configured Domain Name pointing to the Public IP of your deployment server using AWS Route 53
@@ -41,9 +38,38 @@ courses: {'csa': {'week': 18}}
    - This allows you to identify an available port for the application
 
 2. **Docker Setup:**
-   - Configure Docker files in VSCode on localhost using the chosen port
-   - This sets up the local environment for Docker
-   - This will be shown later in the live demo
+   - Before configuring your Dockerfile, ensure that Docker is installed (for our class, it is already installed but it is good practice to verify that it is installed)
+   - Open a terminal and run the following command to check the docker version: ``docker --version``
+   - Verify the port you found using docker ps on AWS EC2 is matched in your Dockerfile and docker-compose.yml
+
+> What your Dockerfile should look like
+
+```# syntax=docker/dockerfile:1
+FROM openjdk:18-alpine3.13
+WORKDIR /app
+RUN apk update && apk upgrade && \
+    apk add --no-cache git 
+COPY . /app
+RUN ./mvnw package
+CMD ["java", "-jar", "target/spring-0.0.1-SNAPSHOT.jar"]
+EXPOSE 8---
+```
+
+> What your docker-compose.yml should look like
+
+```version: '3'
+services:
+  web:
+    image: your_image_name
+    build: .
+    ports:
+      - "8---:8---"
+    volumes:
+       - ./volumes:/volumes
+    restart: unless-stopped
+```
+
+   - Once the ports match, test your setup by running ``docker-compose up -d``
 
 3. **Testing:**
    - Test the application locally before deployment
