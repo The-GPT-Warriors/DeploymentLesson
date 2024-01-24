@@ -172,6 +172,11 @@ public class SecurityConfig {
 
 ![]({{site.baseurl}}/images/dns.png)
 
+![]({{site.baseurl}}/images/route53.png)
+
+
+
+
 
 - DNS System controls which server an end user will reach when they type a domain name into their web browser (known as **queries**)
 
