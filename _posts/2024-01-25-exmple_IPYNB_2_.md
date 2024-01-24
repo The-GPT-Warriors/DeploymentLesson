@@ -2,7 +2,7 @@
 toc: True
 comments: True
 layout: notebook
-title: Deployment
+title: Sample
 description: An in depth deployment lesson
 authors: Aliya, Anthony, Emaad, Emma, Ethan T., Grace, Tay, Vivian
 type: hacks
