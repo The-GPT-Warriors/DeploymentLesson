@@ -1,7 +1,7 @@
 ---
 toc: True
 comments: True
-layout: posts
+layout: notebook
 title: Deployment
 description: An in depth deployment lesson
 authors: Aliya, Anthony, Emaad, Emma, Ethan T., Grace, Tay, Vivian
