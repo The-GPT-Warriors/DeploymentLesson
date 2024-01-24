@@ -259,11 +259,11 @@ What your NGINX config file should look like
 server {
     listen 80;
      listen [::]:80;
-     server_name -----.example.nighthawkcodingsociety.com ; # change server name to your domain
+     server_name -----.stu.nighthawkcodingsociety.com ; # change server name to your domain
      location / {
-         proxy_pass http://localhost:8000; # change port to yours
+         proxy_pass http://localhost:8---; # change port to yours
          if ($request_method ~* "(GET|POST|PUT|DELETE)") {
-                 add_header "Access-Control-Allow-Origin"  *;
+                 add_header "Access-Control-Allow-Origin"  "https://nighthawkcoders.github.io";
          }
          if ($request_method = OPTIONS ) {
                  add_header "Access-Control-Allow-Origin"  *;
@@ -276,6 +276,8 @@ server {
 ```
 
 3. **Validation and Restart:**
+   - Save changes using `ctrl x` or `cmd x` and then `y`
+   - Create a symbolic link `cd /etc/nginx/sites-enabled` -> and then `sudo ln -s /etc/nginx/sites-available/yourproject /etc/nginx/sites-enabled`
    - Validate with `sudo nginx -t`
    - Restart NGINX: `sudo systemctl restart nginx`
    - Test your domain on your desktop browser (http://)
