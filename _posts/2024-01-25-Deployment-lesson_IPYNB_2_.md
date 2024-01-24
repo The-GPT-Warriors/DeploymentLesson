@@ -1,15 +1,13 @@
 ---
+toc: True
 comments: True
-layout: notebook
+layout: posts
 title: Deployment
 description: An in depth deployment lesson
+authors: Aliya, Anthony, Emaad, Emma, Ethan T., Grace, Tay, Vivian
 type: hacks
-toc: True
-courses: {'csa': {'week': 18}}
+courses: {'csa': {'week': 19}}
 ---
-
-# Docker
-
 
 # CORS
 - Cross-Origin Resource Sharing (CORS) is a security feature implemented by web browsers to control how web pages in one domain can request and interact with resources from another domain.
@@ -156,12 +154,162 @@ public class SecurityConfig {
 3. Install dotenv
 ```npm install dotenv```
 4. Create .env file in root of project, in this file set JWT secret key: example - ```JWT_SECRET=your_secret_key```
-5. In the beginning of your app file (like app.js or index.js), require and configure dotenv so you can load variables from .env file into process.env: ```require('dotenv').config()```
+5. Make a .js file, require and configure dotenv so you can load variables from .env file into process.env: ```require('dotenv').config()```
 6. Whenever you need to sign or verify JWT, use the secret from the environment variables, keep key secure and easily configureable: ```const jwtSecret = process.env.JWT_SECRET;```
 
 ## Good Practices
 - Never commit `.env`, always keep `.env` in `.gitignore`, to prevent it being pushed to version control
 - Reguarly rotate secret keys for good security
+
+### Instance Directory
+1. **Purpose**
+   - Stores instance specific data
+      - ie: configuration files, logs, any data that is specific to that instance.
+   - This idea becomes vital when multiple instances are being used simutaneously. 
+   - Having a separate instance directory ensures that configurations and instance data don't get mixed up.
+
+### Database
+1. **Purpose**
+   - Stores persistent data for the application.
+   - Can be SQL or NoSQL.
+      - ie: MySQL, PostgreSQL, MongoDB, Redis.
+   - Critical for managing transactions, authentication, and more.
+
+## Mini-Guide: Deploying Your Site with AWS
+
+#### Important Requirements: Must have a backend that runs locally and have a domain name pointing to the Public IP of your deployment server using AWS Route 53
+
+### AWS EC2 Access
+1. **Login to AWS Console:**
+   - Access AWS Management Console
+   - Navigate to "EC2" and select "Instances."
+
+2. **Instance Selection:**
+   - Choose the appropriate instance (Rift-CSA-P1) based on your project
+   - <img width="700" src="https://github.com/The-GPT-Warriors/DeploymentLesson/assets/107821010/38f208bf-74d1-4d0f-b930-c3ddec75e4df">
+
+3. **Terminal Access:**
+   - Access the deployment server using either csp.nighthawkcodingsociety.com or csa.nighthawkcodingsociety.com
+   - Enter the username and password
+
+### Server Setup
+1. **AWS EC2 Terminal:**
+   - Setup the server environment and fetch the project code
+   - Clone your backend repo: `git clone github.com/server/project.git your_repo`
+   - Navigate to the repo: `cd your_repo`
+
+### Application Setup
+1. **Finding Port:**
+   - Run `docker ps` on AWS EC2 terminal to find which ports are already taken
+   - This allows you to identify an available port for the application, choose one that is not taken
+
+2. **Docker Setup:**
+   - Before configuring your Dockerfile, ensure that Docker is installed (for our class, it is already installed but it is good practice to verify it)
+   - Open a terminal and run the following command to check the docker version: ``docker --version``
+   - Verify the port you found after running docker ps is matched in your Dockerfile and docker-compose.yml
+
+> What your Dockerfile should look like
+
+```
+# syntax=docker/dockerfile:1
+FROM openjdk:18-alpine3.13
+WORKDIR /app
+RUN apk update && apk upgrade && \
+    apk add --no-cache git 
+COPY . /app
+RUN ./mvnw package
+CMD ["java", "-jar", "target/spring-0.0.1-SNAPSHOT.jar"]
+EXPOSE 8---
+```
+
+> What your docker-compose.yml should look like
+
+```
+version: '3'
+services:
+  web:
+    image: your_image_name
+    build: .
+    ports:
+      - "8---:8085"
+    volumes:
+       - ./volumes:/volumes
+    restart: unless-stopped
+```
+
+   - Once the ports match, test your setup by running ``docker-compose up -d`` to build your website
+   - Run ```curl localhost:8---``` to check if your build was successful
+
+### DNS & NGINX Setup
+1. **Route 53 DNS:**
+   - Configure DNS for domain mapping
+   - Set up DNS subdomain for your backend server in AWS Route 53
+   - Emaad will go over this in-depth later
+
+
+2. **NGINX Configuration:**
+   - Navigate to `/etc/nginx/sites-available` in the terminal
+   - Create an NGINX config file and configure it accordingly
+   - Configure NGINX as a reverse proxy for the application
+
+What your NGINX config file should look like
+
+
+```python
+server {
+    listen 80;
+     listen [::]:80;
+     server_name -----.example.nighthawkcodingsociety.com ; # change server name to your domain
+     location / {
+         proxy_pass http://localhost:8000; # change port to yours
+         if ($request_method ~* "(GET|POST|PUT|DELETE)") {
+                 add_header "Access-Control-Allow-Origin"  *;
+         }
+         if ($request_method = OPTIONS ) {
+                 add_header "Access-Control-Allow-Origin"  *;
+                 add_header "Access-Control-Allow-Methods" "GET, POST, PUT, DELETE, OPTIONS, HEAD"; # request methods above match here
+                 add_header "Access-Control-Allow-Headers" "Authorization, Origin, X-Requested-With, Content-Type, Accept";
+                 return 200;
+         }
+     }
+ }
+```
+
+3. **Validation and Restart:**
+   - Validate with `sudo nginx -t`
+   - Restart NGINX: `sudo systemctl restart nginx`
+   - Test your domain on your desktop browser (http://)
+   - These commands allow you to validate your NGINX configuration and restarts for changes to take effect
+
+### Certbot Configuration
+1. **Run Certbot:**
+   - Configure SSL certificates for secure communication
+   - Execute `sudo certbot --nginx` and follow prompts
+   - Choose appropriate options for HTTPS activation
+
+2. **Verify HTTPS:**
+   - Test your domain in the browser using HTTPS, paste your link into the browser with HTTPS 
+
+### Changing Code and Deployment Updates
+1. **VSCode Changes:**
+   - Before updating, run `git pull` to sync changes
+   - Make code changes and test using Docker Desktop
+   - This will synchronize your code changes that you have tested locally
+
+2. **Deployment Update:**
+   - Once all code changes are up to date, commit and sync changes or `git push` from the terminal
+
+### Pulling Changes into AWS EC2
+1. **AWS EC2 Terminal:**
+   - Navigate to your repo: `cd ~/my_unique_name`
+   - Stop the server: `docker-compose down` - should cause 502 Bad Gateway
+   - Pull changes: `git pull`
+   - Rebuild and start the container: `docker-compose up -d --build`
+
+### Optional Troubleshooting Checks on AWS EC2
+1. **Check Server Status:**
+   - Check the status of your website
+   - Use commands like `curl localhost:8---` and `docker-compose ps` for verification
 
 # DNS
 
@@ -173,8 +321,6 @@ public class SecurityConfig {
 ![]({{site.baseurl}}/images/dns.png)
 
 ![]({{site.baseurl}}/images/route53.png)
-
-
 
 
 
@@ -193,7 +339,6 @@ Breakdown of the process:
 - The main website server contacts the number and waits for a correct reply to confirm it's the right one for the website you need
 - If the unique number is right, the main website server sends it back to your internet browser
 - Your web browser receives the correct unique number and starts loading the webpage!
-
 
 # Nginx
 
