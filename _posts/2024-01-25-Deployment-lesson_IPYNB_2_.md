@@ -188,6 +188,10 @@ public class SecurityConfig {
    - Choose the appropriate instance (Rift-CSA-P1) based on your project
    - <img width="700" src="https://github.com/The-GPT-Warriors/DeploymentLesson/assets/107821010/38f208bf-74d1-4d0f-b930-c3ddec75e4df">
 
+3. **Terminal Access:**
+   - Access the deployment server using either csp.nighthawkcodingsociety.com or csa.nighthawkcodingsociety.com
+   - Enter the username and password
+
 ### Server Setup
 1. **AWS EC2 Terminal:**
    - Setup the server environment and fetch the project code
@@ -259,10 +263,10 @@ server {
      location / {
          proxy_pass http://localhost:8---; # change port to yours
          if ($request_method ~* "(GET|POST|PUT|DELETE)") {
-                 add_header "Access-Control-Allow-Origin"  "https://nighthawkcoders.github.io";
+                 add_header "Access-Control-Allow-Origin"  "https://nighthawkcoders.github.io"p;
          }
          if ($request_method = OPTIONS ) {
-                 add_header "Access-Control-Allow-Origin"  *;
+                 add_header "Access-Control-Allow-Origin"  "https://nighthawkcoders.github.io";
                  add_header "Access-Control-Allow-Methods" "GET, POST, PUT, DELETE, OPTIONS, HEAD"; # request methods above match here
                  add_header "Access-Control-Allow-Headers" "Authorization, Origin, X-Requested-With, Content-Type, Accept";
                  return 200;
