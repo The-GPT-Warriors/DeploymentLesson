@@ -5,7 +5,7 @@ title: Deployment
 description: An in depth deployment lesson
 type: hacks
 toc: True
-courses: {'csa': {'week': 18}}
+courses: {'csa': {'week': 19}}
 ---
 
 # Docker
