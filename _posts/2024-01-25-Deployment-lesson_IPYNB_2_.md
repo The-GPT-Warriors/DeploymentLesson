@@ -1,8 +1,8 @@
 ---
 toc: True
 comments: True
-layout: posts
-title: Deployment
+layout: notebook
+title: Deployment Lesson
 description: An in depth deployment lesson
 authors: Aliya, Anthony, Emaad, Emma, Ethan T., Grace, Tay, Vivian
 type: hacks
