@@ -14,99 +14,103 @@ courses: {'csa': {'week': 18}}
 
 ### Prerequisites
 1. **GitHub Repository:**
-   - Must have a backend repository on GitHub.
+   - Must have a backend repository on GitHub
 
 2. **Docker Setup:**
-   - Verify Backend Docker files are running on localhost.
+   - Verify Backend Docker files are running on localhost
 
 3. **Domain Configuration:**
-   - Have a configured Domain Name pointing to the Public IP of your deployment server using AWS Route 53.
+   - Have a configured Domain Name pointing to the Public IP of your deployment server using AWS Route 53
 
 ### AWS EC2 Access
 1. **Login to AWS Console:**
-   - Access AWS Management Console.
+   - Access AWS Management Console
    - Navigate to "EC2" and select "Instances."
 
 2. **Instance Selection:**
-   - Choose the appropriate instance (CSP or CSA) based on your project.
+   - Choose the appropriate instance (CSP or CSA) based on your project
+   - <img width="700" src="https://github.com/The-GPT-Warriors/DeploymentLesson/assets/107821010/38f208bf-74d1-4d0f-b930-c3ddec75e4df">
 
 3. **Terminal Access:**
-   - Access the deployment server using either csp.nighthawkcodingsociety.com or csa.nighthawkcodingsociety.com.
-   - Use the username "ubuntu" with the password hint "3 Musketeers."
+   - Access the deployment server using either csp.nighthawkcodingsociety.com or csa.nighthawkcodingsociety.com
+   - Enter the username and password
 
 ### Application Setup
 1. **Finding Port:**
-   - Run `docker ps` on AWS EC2 terminal to find an available port starting with 8—.
-   - Explanation: Identifies an available port for the application.
+   - Run `docker ps` on AWS EC2 terminal to find an available port starting with 8—
+   - This allows you to identify an available port for the application
 
-2. **Local Docker Setup:**
-   - Configure Docker files in VSCode on localhost using the chosen port.
-   - Explanation: Sets up the local environment for Docker.
+2. **Docker Setup:**
+   - Configure Docker files in VSCode on localhost using the chosen port
+   - This sets up the local environment for Docker
+   - This will be shown later in the live demo
 
 3. **Testing:**
-   - Run `docker-compose up` or `sudo docker-compose up` in VSCode terminal.
-   - Open `http://localhost:8---` in your browser to check if it runs smoothly.
-   - Explanation: Tests the application locally before deployment.
+   - Test the application locally before deployment
+   - Run `docker-compose up` or `sudo docker-compose up` in VSCode terminal
+   - Open `http://localhost:8---` in your browser to check if it runs smoothly
 
 ### Server Setup
 1. **AWS EC2 Terminal:**
-   - Clone your backend repo: `git clone github.com/server/project.git my_unique_name`.
-   - Navigate to the repo: `cd my_unique_name`.
-   - Explanation: Sets up the server environment and fetches the project code.
+   - Setup the server environment and fetch the project code
+   - Clone your backend repo: `git clone github.com/server/project.git your_repo`
+   - Navigate to the repo: `cd your_repo`
 
 2. **Build and Test:**
-   - Build the site: `docker-compose up -d --build`.
-   - Test your site: `curl localhost:8---` (replace '8---' with your port).
-   - Explanation: Builds and tests the application on the server.
+   - Build and test the application on the server
+   - Build the site: `docker-compose up -d --build`
+   - Test your site: `curl localhost:8---` (replace '8---' with your port)
 
 ### DNS & NGINX Setup
 1. **Route 53 DNS:**
-   - Set up DNS subdomain for your backend server in AWS Route 53.
-   - Explanation: Configures DNS for domain mapping.
+   - Configure DNS for domain mapping
+   - Set up DNS subdomain for your backend server in AWS Route 53
+   - Emaad will go over this in-depth later
+
 
 2. **NGINX Configuration:**
-   - Navigate to `/etc/nginx/sites-available` in the terminal.
-   - Create an NGINX config file and configure it accordingly.
-   - Explanation: Configures NGINX as a reverse proxy for the application.
+   - Navigate to `/etc/nginx/sites-available` in the terminal
+   - Create an NGINX config file and configure it accordingly
+   - Configure NGINX as a reverse proxy for the application
 
 3. **Validation and Restart:**
-   - Validate with `sudo nginx -t`.
-   - Restart NGINX: `sudo systemctl restart nginx`.
-   - Test your domain on your desktop browser (http://).
-   - Explanation: Validates NGINX configuration and restarts for changes to take effect.
+   - Validate with `sudo nginx -t`
+   - Restart NGINX: `sudo systemctl restart nginx`
+   - Test your domain on your desktop browser (http://)
+   - These commands allow you to validate your NGINX configuration and restarts for changes to take effect
 
 ### Certbot Configuration
 1. **Run Certbot:**
-   - Execute `sudo certbot --nginx` and follow prompts.
-   - Choose appropriate options for HTTPS activation.
-   - Explanation: Configures SSL certificates for secure communication.
+   - Configure SSL certificates for secure communication
+   - Execute `sudo certbot --nginx` and follow prompts
+   - Choose appropriate options for HTTPS activation
 
 2. **Verify HTTPS:**
-   - Test your domain in the browser using HTTPS.
-   - Explanation: Ensures successful HTTPS setup.
+   - Test your domain in the browser using HTTPS, paste your link into the browser with HTTPS 
 
 ### Changing Code and Deployment Updates
 1. **VSCode Changes:**
-   - Before updating, run `git pull` to sync changes.
-   - Make code changes and test using Docker Desktop.
-   - Explanation: Synchronizes code changes and tests locally.
+   - Before updating, run `git pull` to sync changes
+   - Make code changes and test using Docker Desktop
+   - This will synchronize your code changes that you have tested locally
 
 2. **Deployment Update:**
-   - If all goes well, sync changes via UI or `git push` from the terminal.
-   - Explanation: Deploys updated code to the server.
+   - If all goes well, sync changes via UI or `git push` from the terminal
+   - This allows you to deploy updated code to the server
+
 
 ### Pulling Changes into AWS EC2
 1. **AWS EC2 Terminal:**
-   - Navigate to your repo: `cd ~/my_unique_name`.
-   - Stop the server: `docker-compose down`.
-   - Pull changes: `git pull`.
-   - Rebuild and start the container: `docker-compose up -d --build`.
-   - Explanation: Pulls and updates code on the server, then restarts the application.
+   - Pull and update code on the server, then restart the application
+   - Navigate to your repo: `cd ~/my_unique_name`
+   - Stop the server: `docker-compose down`
+   - Pull changes: `git pull`
+   - Rebuild and start the container: `docker-compose up -d --build`
 
 ### Optional Troubleshooting Checks on AWS EC2
 1. **Check Server Status:**
-   - Use commands like `curl localhost:8---` and `docker-compose ps` for verification.
-   - Explanation: Checks the status of the running application.
+   - Check the status of your website
+   - Use commands like `curl localhost:8---` and `docker-compose ps` for verification
 
 # CORS
 - Cross-Origin Resource Sharing (CORS) is a security feature implemented by web browsers to control how web pages in one domain can request and interact with resources from another domain.
