@@ -8,111 +8,7 @@ toc: True
 courses: {'csa': {'week': 18}}
 ---
 
-# Deployment Mini Guide
-
-## Mini-Guide: Deploying Your Site with AWS
-
-### Prerequisites
-1. **GitHub Repository:**
-   - Must have a backend repository on GitHub.
-
-2. **Docker Setup:**
-   - Verify Backend Docker files are running on localhost.
-
-3. **Domain Configuration:**
-   - Have a configured Domain Name pointing to the Public IP of your deployment server using AWS Route 53.
-
-### AWS EC2 Access
-1. **Login to AWS Console:**
-   - Access AWS Management Console.
-   - Navigate to "EC2" and select "Instances."
-
-2. **Instance Selection:**
-   - Choose the appropriate instance (CSP or CSA) based on your project.
-
-3. **Terminal Access:**
-   - Access the deployment server using either csp.nighthawkcodingsociety.com or csa.nighthawkcodingsociety.com.
-   - Use the username "ubuntu" with the password hint "3 Musketeers."
-
-### Application Setup
-1. **Finding Port:**
-   - Run `docker ps` on AWS EC2 terminal to find an available port starting with 8—.
-   - Explanation: Identifies an available port for the application.
-
-2. **Local Docker Setup:**
-   - Configure Docker files in VSCode on localhost using the chosen port.
-   - Explanation: Sets up the local environment for Docker.
-
-3. **Testing:**
-   - Run `docker-compose up` or `sudo docker-compose up` in VSCode terminal.
-   - Open `http://localhost:8---` in your browser to check if it runs smoothly.
-   - Explanation: Tests the application locally before deployment.
-
-### Server Setup
-1. **AWS EC2 Terminal:**
-   - Clone your backend repo: `git clone github.com/server/project.git my_unique_name`.
-   - Navigate to the repo: `cd my_unique_name`.
-   - Explanation: Sets up the server environment and fetches the project code.
-
-2. **Build and Test:**
-   - Build the site: `docker-compose up -d --build`.
-   - Test your site: `curl localhost:8---` (replace '8---' with your port).
-   - Explanation: Builds and tests the application on the server.
-
-### DNS & NGINX Setup
-1. **Route 53 DNS:**
-   - Set up DNS subdomain for your backend server in AWS Route 53.
-   - Explanation: Configures DNS for domain mapping.
-
-2. **NGINX Configuration:**
-   - Navigate to `/etc/nginx/sites-available` in the terminal.
-   - Create an NGINX config file and configure it accordingly.
-   - Explanation: Configures NGINX as a reverse proxy for the application.
-
-3. **Validation and Restart:**
-   - Validate with `sudo nginx -t`.
-   - Restart NGINX: `sudo systemctl restart nginx`.
-   - Test your domain on your desktop browser (http://).
-   - Explanation: Validates NGINX configuration and restarts for changes to take effect.
-
-### Certbot Configuration
-1. **Run Certbot:**
-   - Execute `sudo certbot --nginx` and follow prompts.
-   - Choose appropriate options for HTTPS activation.
-   - Explanation: Configures SSL certificates for secure communication.
-
-2. **Verify HTTPS:**
-   - Test your domain in the browser using HTTPS.
-   - Explanation: Ensures successful HTTPS setup.
-
-### Changing Code and Deployment Updates
-1. **VSCode Changes:**
-   - Before updating, run `git pull` to sync changes.
-   - Make code changes and test using Docker Desktop.
-   - Explanation: Synchronizes code changes and tests locally.
-
-2. **Deployment Update:**
-   - If all goes well, sync changes via UI or `git push` from the terminal.
-   - Explanation: Deploys updated code to the server.
-
-### Pulling Changes into AWS EC2
-1. **AWS EC2 Terminal:**
-   - Navigate to your repo: `cd ~/my_unique_name`.
-   - Stop the server: `docker-compose down`.
-   - Pull changes: `git pull`.
-   - Rebuild and start the container: `docker-compose up -d --build`.
-   - Explanation: Pulls and updates code on the server, then restarts the application.
-
-### Optional Troubleshooting Checks on AWS EC2
-1. **Check Server Status:**
-   - Use commands like `curl localhost:8---` and `docker-compose ps` for verification.
-   - Explanation: Checks the status of the running application.
-
-### Cockpit Navigation
-1. **Cockpit Features:**
-   - Explore Cockpit's features for system monitoring, logs, storage, networking, accounts, services, and software updates.
-   - Explanation: Monitors and manages server resources.
-
+# Docker
 
 
 # CORS
@@ -266,3 +162,72 @@ public class SecurityConfig {
 ## Good Practices
 - Never commit `.env`, always keep `.env` in `.gitignore`, to prevent it being pushed to version control
 - Reguarly rotate secret keys for good security
+
+# DNS
+
+- Domain Name System (DNS) is a naming system for computers, services, and other resources on the Internet 
+    - Analogy
+    - Examples you might be familar with: nytimes.com, espn.com, etc.
+- With Amazon Route 53 specifically (what we use on AWS), we can translate something like example.com to numeric IP addresses, shown below:
+
+![]({{site.baseurl}}/images/dns.png)
+
+
+- DNS System controls which server an end user will reach when they type a domain name into their web browser (known as **queries**)
+
+Here's a diagram that can help you visualize the DNS process:
+
+![]({{site.baseurl}}/images/dnsprocess.png)
+
+Breakdown of the process:
+
+- Asks a server (DNS recursive resolver) to find the unique number (IP address) linked to the website typed in (ex nytimes.com)
+- Checks the website's main category (Top Level Domain) using a master server (root nameserver) that lists all websites in each category
+- Requests the specific category server (TLD nameserver) to locate the correct unique number (IP address)
+- The category server gets the unique number and passes it to the main website server (authoritative nameserver) to confirm it's right
+- The main website server contacts the number and waits for a correct reply to confirm it's the right one for the website you need
+- If the unique number is right, the main website server sends it back to your internet browser
+- Your web browser receives the correct unique number and starts loading the webpage!
+
+
+# Nginx
+
+What is Nginx?
+
+- Web server used for...
+    - Load balancing
+    - Reverse proxying
+    - Caching
+- Can be configured as an HTTP server
+
+Why is it important?
+
+- Nginx provides features to advance security
+    - ex. SSL/TLS termination, important for encrypting data in transit
+    - With its caching capabilities, it can reduce the load on application servers -> improve response times -> optimize performance
+    - Works well with Amazon EC2 for hosting
+
+![]({{site.baseurl}}/images/nginx.png)
+
+
+# Certbot
+
+What is Certbot?
+
+- Certbot is a client that changes an HTTP site to an HTTPS (HTTP with encryption and verification) site
+- Automates process of obtaining and installing SSL certificates from Let's Encrypt 
+- Overall, Certbot is a client that simplifies the process of enabling HTTPS on a website
+
+Here is a diagram to help visualize how Certbot works:
+
+![]({{site.baseurl}}/images/certbot.png)
+
+Why is Certbot important?
+
+- Secures web traffic between the server and clients
+- Reduces manual effort of obtaining and installing SSL certificates
+- Websites with HTTPS more trusted by users, essential for handling sensitive data 
+- Cost-efficient solution for implementing SSL/TLS, especially beneficial for personal websites
+- Overall promotes a more secure and trustworthy Internet
+
+
