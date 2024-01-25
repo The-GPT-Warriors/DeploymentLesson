@@ -1,4 +1,4 @@
-![Lesson Link Here](https://the-gpt-warriors.github.io/DeploymentLesson/)
+[Lesson Link Here](https://the-gpt-warriors.github.io/DeploymentLesson/)
 
 
 
