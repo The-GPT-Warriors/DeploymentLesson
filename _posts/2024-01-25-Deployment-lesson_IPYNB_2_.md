@@ -224,6 +224,12 @@ EXPOSE 8---
 
 > What your docker-compose.yml should look like
 
+- ``build: .`` indicates that the image should be built using the current directory as the build context
+
+- ``./volumes:/volumes`` mounts the local directory ./volumes into the container at the path /volumes
+
+- When ```docker-compose up -d``` is ran it will mount the local ./volumes directory to /volumes inside the container
+
 ```
 version: '3'
 services:
